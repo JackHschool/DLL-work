@@ -3,7 +3,7 @@ import datetime
 import os
 import pefile
 
-def dll_dependency_checker(executable_path):
+def dll_dependency_checker(executable_path, output_file):
     # Step 1: Extracting DLL names from the executable file
     dll_list = []
     try:
@@ -42,19 +42,31 @@ def dll_dependency_checker(executable_path):
         else:
             false_list.append(dll_name)
 
-    # Step 5: Generate result dictionary
-    result = {
+    # Step 5: Write results to file
+    with open(output_file, 'w') as f:
+        f.write(f"Timestamp: {timestamp}\n")
+        f.write("True List:\n")
+        for dll in true_list:
+            f.write(f"{dll}\n")
+        f.write("False List:\n")
+        for dll in false_list:
+            f.write(f"{dll}\n")
+
+    return {
         "True_list": true_list,
         "False_list": false_list,
         "Timestamp": timestamp
     }
 
-    return result
-
 # Example usage
-executable_path = "path_to_your_executable/a.exe"
-result = dll_dependency_checker(executable_path)
+executable_path = "C:\\Users\\19735\\Desktop\\PE-bear.exe"
+output_file = "output.txt"
+result = dll_dependency_checker(executable_path, output_file)
 if result:
     print("DLL Dependencies (Found):", result["True_list"])
     print("DLL Dependencies (Not Found):", result["False_list"])
     print("Timestamp:", result["Timestamp"])
+
+#UPDATE GITHUB WITH RESUTS AND ADD A README
+#TRY TO MAKE IT WORK AND TEST IT ON DIFFERENT .EXES
+    
