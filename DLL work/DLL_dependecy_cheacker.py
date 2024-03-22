@@ -36,11 +36,17 @@ def dll_dependency_checker(executable_path, output_file):
     true_list = []
     false_list = []
     for dll_status in dll_status_list:
-        dll_name, status = dll_status.split()
-        if status == "True":
-            true_list.append(dll_name)
+        parts = dll_status.split()
+        if len(parts) >= 2:
+            dll_name = parts[0]
+            status = parts[1]
+            if status == "True":
+                true_list.append(dll_name)
+            else:
+                false_list.append(dll_name)
         else:
-            false_list.append(dll_name)
+            # Handle the case where there are not enough parts in the line
+            print("Unexpected format:", dll_status)
 
     # Step 5: Write results to file
     with open(output_file, 'w') as f:
@@ -66,7 +72,3 @@ if result:
     print("DLL Dependencies (Found):", result["True_list"])
     print("DLL Dependencies (Not Found):", result["False_list"])
     print("Timestamp:", result["Timestamp"])
-
-#UPDATE GITHUB WITH RESUTS AND ADD A README
-#TRY TO MAKE IT WORK AND TEST IT ON DIFFERENT .EXES
-    
