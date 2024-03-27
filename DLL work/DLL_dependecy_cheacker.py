@@ -26,8 +26,9 @@ def dll_dependency_checker(executable_path, output_file):
     try:
         powershell_output = subprocess.check_output(["powershell", "-Command", powershell_script], text=True)
         dll_status_list = powershell_output.strip().split('\n')
-    except subprocess.CalledProcessError:
-        dll_status_list = []
+    except subprocess.CalledProcessError as e:
+        print("Error executing PowerShell script:", e)
+        return None
 
     # Step 3: Generate timestamp
     timestamp = datetime.datetime.fromtimestamp(os.path.getmtime(executable_path)).strftime("%Y-%m-%d %H:%M:%S")
@@ -49,14 +50,18 @@ def dll_dependency_checker(executable_path, output_file):
             print("Unexpected format:", dll_status)
 
     # Step 5: Write results to file
-    with open(output_file, 'w') as f:
-        f.write(f"Timestamp: {timestamp}\n")
-        f.write("True List:\n")
-        for dll in true_list:
-            f.write(f"{dll}\n")
-        f.write("False List:\n")
-        for dll in false_list:
-            f.write(f"{dll}\n")
+    try:
+        with open(output_file, 'w') as f:
+            f.write(f"Timestamp: {timestamp}\n")
+            f.write("True List:\n")
+            for dll in true_list:
+                f.write(f"{dll}\n")
+            f.write("False List:\n")
+            for dll in false_list:
+                f.write(f"{dll}\n")
+    except Exception as e:
+        print("Error writing to output file:", e)
+        return None
 
     return {
         "True_list": true_list,
@@ -65,7 +70,7 @@ def dll_dependency_checker(executable_path, output_file):
     }
 
 # Example usage
-executable_path = "C:\\Users\\19735\\Desktop\\PE-bear.exe"
+executable_path = r"C:\Users\19735\Desktop\PE-bear.exe"
 output_file = "output.txt"
 result = dll_dependency_checker(executable_path, output_file)
 if result:
